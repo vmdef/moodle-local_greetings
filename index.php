@@ -41,17 +41,19 @@ if (isguestuser()) {
 
 $action = optional_param('action', '', PARAM_TEXT);
 
+$allowpost = has_capability('local/greetings:postmessages', $context);
+$deletepost = has_capability('local/greetings:deleteownmessage', $context);
+$deleteanypost = has_capability('local/greetings:deleteanymessage', $context);
+
 if ($action == 'del') {
     require_sesskey();
     $id = required_param('id', PARAM_TEXT);
 
-    // TODO: Confirm before deleting.
-    $DB->delete_records('local_greetings_messages', array('id' => $id));
+    if ($deleteanypost || $deletepost) {
+        // TODO: Confirm before deleting.
+        $DB->delete_records('local_greetings_messages', array('id' => $id));
+    }
 }
-
-$allowpost = has_capability('local/greetings:postmessages', $context);
-$deletepost = has_capability('local/greetings:deleteownmessage', $context);
-$deleteanypost = has_capability('local/greetings:deleteanymessage', $context);
 
 $messageform = new local_greetings_message_form();
 
